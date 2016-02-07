@@ -1,0 +1,155 @@
+<!DOCTYPE=html>
+<html>
+
+<head>    
+    <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-animate.js"></script>
+    <link rel="stylesheet" href="tablet.css" type="text/css">
+    
+    <script src="controller.js"></script>
+
+</head>
+
+<body>
+    <div class="mainBackground">
+        <p class="title">client prototype in css: wxga resolution 7" tablet</p>
+
+        <div class="splash tablet-ui">
+            <div class="text-logo">Restaurant Name</div>
+            <div class="welcome-message tablet-text anim-text-1">welcome to table top<br><div class="bottom-heading">order • eat • pay</div></div>
+            <div class="logo"></div><div class="connectivity">testing connectivity</div><div class="test-ok">connectivity ok</div>
+
+
+        </div>
+        <div ng-app="tableSelectionApp" ng-controller="tableSelectionController">
+        <div class="table-select tablet-ui"  ng-show="show_screen">
+            <div class="welcome-message tablet-text anim-text-2">
+                please enter the table number
+                <br>
+                <div class="bottom-heading">you may draw the table number with your hand too (not yet)</div>
+                <div class="output">{{enteredNumberStr}}</div>
+                <div class="buttoncontainer">
+                    <div class="row">
+                        <div class="keypad-element" ng-click="myNoodle(1)">1</div>
+                        <div class="keypad-element" ng-click="myNoodle(2)">2</div>
+                        <div class="keypad-element" ng-click="myNoodle(3)">3</div>
+                    </div>
+                    <div class="row">
+                        <div class="keypad-element" ng-click="myNoodle(4)">4</div>
+                        <div class="keypad-element" ng-click="myNoodle(5)">5</div>
+                        <div class="keypad-element" ng-click="myNoodle(6)">6</div>
+                    </div>
+                    <div class="row">
+                        <div class="keypad-element" ng-click="myNoodle(7)">7</div>
+                        <div class="keypad-element" ng-click="myNoodle(8)">8</div>
+                        <div class="keypad-element" ng-click="myNoodle(9)">9</div>
+                    </div>
+                    <div class="row">
+                        <div class="keypad-element" ng-click="enteredNumberStr=''">clear</div>
+                        <div class="keypad-element" ng-click="myNoodle(0)">0</div>
+                        <div class="keypad-element" ng-click="sendData()"> OK</div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+            <div class="orderinfo" ng-show='showOrders'>
+                <article>
+                    <h1>Your Order</h1>
+                    <div class='tablecontainer'>
+                        <table border='1px'>
+
+                            <tr><th>Order</th><th>Quantity</th><th>Cost</th></tr>
+                            <tr ng-repeat="x in orderList"><td>{{fromOrderIdGetMealName(x.orderid)[0]}}</td><td>{{x.quantity}}</td><td>{{fromOrderIdGetMealName(x.orderid)[1]}}</td></tr>
+                        </table>
+                    </div>
+                </article>
+                <button ng-click='showOrders=false'>Go Back</button>
+                <button ng-click='submitOrder()'>Submit</button>
+                <p>to style later</p>
+
+
+            </div>
+            <div class='order_received_confirmation' ng-show='showOrderReceived'>
+                <p>Order Received Ok</p>
+                <button ng-click='showOrderReceived=false'>ok</button>
+            </div>
+            <div class="foodinfo" ng-show='showFoodDetails'>
+
+                <article>
+
+                    <h1>{{fooditems_starters[selectedIndex].mealname}}</h1>
+                    <img class='image_info' ng-src='{{fooditem_imgsrc}}'></img>
+                    <div class='maincatcontainer'>
+                        <div class='maincatelement' ng-repeat='el in fooditems_starters[selectedIndex].maincategories' ng-class="{vg:el=='V',gf:el=='GF'}">{{el}}</div>
+                    </div>
+                    <p>{{fooditems_starters[selectedIndex].description}}</p>
+                    <p>{{fooditems_starters[selectedIndex].cost}}</p>
+                </article>
+                <div class='maincatcontainer'>
+                    <div class='goback bButton' ng-click='back()' ng-class='{aniButton:bAniButton}'>Back</div><div class='a2o bButton' ng-click='addtoorder()' ng-class='{aniButtona2o:bAniButtona2o}'>Add To Order</div>
+                </div>
+
+            </div>
+            <div class="main-menu tablet-ui-2 tablet-pos" ng-hide="show_screen" ng-class='{blurback:blurBackground}'>
+
+                <div class="heading"><div class='rHeading'>Welcome to our Restaurant, You're table {{enteredNumberStr}}</div><div class='orderbutton' ng-click='orderButtonClicked()' ng-class='{orderanim:orderButtonAnim}'>View Order ({{getTotalOrder()}})</div></div>
+                <div class="menu-sections">
+                    <div class="menu-section menu-section-home" ng-show='msvisibility.home'>
+                        <div class='home-logo'>Restaurant Name</div>
+                        <div class="home-container">
+
+                            <div class="home-image home-container-top-left"></div><div class="home-image home-container-top-right"></div>
+                        </div>
+
+                        <div class="home-container">
+                            <div class="home-image home-container-bottom-1"></div>
+                            <div class="home-image home-container-bottom-2"></div>
+                            <div class="home-image home-container-bottom-3"></div>
+                        </div>
+                    </div>
+                    <div class="menu-section menu-section-appetisers" ng-show='msvisibility.appetisers'>
+                        <h1>Starters</h1>
+                        <div id='id-food-container' class='food-item-container'>
+
+                            <div class='food-item widdle' ng-repeat='x in fooditems_starters' ng-class='{clicked:clickedanimations[$index]}' ng-click='setAnimation($index)'>
+                                <img class='imageholder' ng-src='{{x.image}}' ng-show='{{x.hasimage}}'></img>
+                                <div class="description-container">
+                                    <div class='desc-title desc'>{{x.mealname}}</div>
+                                    <div class='desc-actualdescription desc'>{{x.description}}</div>
+                                    <div class='desc-cost desc'>{{x.cost}}</div>
+                                    <div class='desc-foodindicators desc'></div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="menu-section menu-section-mainmeal" ng-show='msvisibility.mainmeal'>
+                        main bollocks
+                    </div>
+                    <div class="menu-section menu-section-drinks" ng-show='msvisibility.drinks'>
+                        drinkies
+                    </div>
+                </div>
+
+                <div class="button-row">
+
+                    <button ng-click="setSectionValue('home')">Home</button>
+                    <button ng-click="setSectionValue('appetisers')">Appetisers</button>
+                    <button ng-click="setSectionValue('mainmeal')">Main Meal</button>
+                    <button ng-click="setSectionValue('drinks')">Drinks</button>
+                </div>
+            </div>
+
+            </div>
+
+    </div>
+</body>
+
+</html>

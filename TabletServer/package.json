@@ -1,0 +1,10 @@
+{
+  "name": "TabletServer",
+  "version": "0.0.0",
+  "description": "TabletServer",
+  "main": "app.js",
+  "author": {
+    "name": "rav",
+    "email": ""
+  }
+}

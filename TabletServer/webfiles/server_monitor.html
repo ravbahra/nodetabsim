@@ -1,0 +1,186 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Server Monitor</title>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-animate.js"></script>
+    <style>
+        .left-section{
+            position:relative;
+            height:100%;
+            width:200px;
+            text-align:center;
+            vertical-align:text-top;
+            display:inline-block;
+            
+
+}
+
+.right-section{
+  display:inline-block;
+}
+
+.row:nth-child(odd){
+  background-color:lightblue;
+  
+}
+
+.row:nth-child(even){
+
+  background-color:cadetblue;
+}
+
+.section-element{
+  
+}
+.row.ng-enter{
+    transition:1s;
+    opacity:0;
+}
+.row.ng-enter.ng-enter-active{
+    opacity:1;
+}
+
+.row.ng-enter-stagger{
+    transition-duration:0s;
+    transition-delay:0.4s;
+}
+
+    </style>
+    <script>
+        var socket = io('/server_namespace');
+
+
+        var app = angular.module('myapp', ['ngAnimate']);
+
+        app.controller('mycontroller', function ($scope) {
+
+         $scope.fooditems_starters = [{
+                orderid: '0',
+                mealname: 'Tomato Soup',
+                description: 'This soup is thick and wholesome',
+                hasimage: 'true',
+                cost: '3.40',
+                image: 'http://mda.bigoven.com/pics/rs/256/recipe-no-image.jpg',
+                maincategories: ['V', 'GF']
+            }, {
+                orderid: '1',
+                mealname: 'Asparagus Soup',
+                description: 'description for asparagus soup',
+                hasimage: 'true',
+                cost: '4.99',
+                image: 'http://mda.bigoven.com/pics/rs/256/recipe-no-image.jpg',
+                maincategories: ['V', 'GF']
+            }, {
+                orderid: '2',
+                mealname: 'Buckaroo Soup',
+                description: 'Suckaroo Fuckaroo',
+                hasimage: 'true',
+                cost: '3.99',
+                image: 'http://mda.bigoven.com/pics/rs/256/recipe-no-image.jpg',
+                maincategories: ['V', 'GF']
+            }, {
+                orderid: '3',
+                mealname: 'Shrimp Salad',
+                description: 'Salad with Shrimps',
+                hasimage: 'true',
+                cost: '6.89',
+                image: 'http://mda.bigoven.com/pics/rs/256/recipe-no-image.jpg',
+                maincategories: ['V']
+            }, {
+                orderid: '4',
+                mealname: 'Pea & Mint',
+                description: 'A perfect blend of vibrant garden peas and stock',
+                hasimage: 'true',
+                cost: '3.98',
+                image: 'http://mda.bigoven.com/pics/rs/256/recipe-no-image.jpg',
+                maincategories: ['V', 'GF']
+            }, {
+                orderid: '5',
+                mealname: 'Asparagus Soup',
+                description: 'Asparagus soup mother fucker yeah this is the shit',
+                cost: '4.40',
+                hasimage: 'true',
+                image: 'http://mda.bigoven.com/pics/rs/256/recipe-no-image.jpg',
+                maincategories: ['V', 'GF']
+            }, {
+                orderid: '6',
+                mealname: 'Chicken Edamame & Ginger',
+                description: 'piddle soup mother fucker',
+                hasimage: 'true',
+                cost: '8.59',
+                image: 'http://mda.bigoven.com/pics/rs/256/recipe-no-image.jpg',
+                maincategories: ['V', 'GF']
+            }, {
+                orderid: '7',
+                mealname: 'Chicken & Broccoli',
+                description: 'Absolutely rank',
+                hasimage: 'true',
+                cost: '8.40',
+                image: 'http://mda.bigoven.com/pics/rs/256/recipe-no-image.jpg',
+                maincategories: ['V']
+            }, {
+                orderid: '8',
+                mealname: 'Vetetable Tagine',
+                description: 'Made with ripe tomatoes, chickpeas and lentils',
+                hasimage: 'true',
+                cost: '9.47',
+                image: 'http://mda.bigoven.com/pics/rs/256/recipe-no-image.jpg',
+                maincategories: ['V']
+            }, ];
+
+         $scope.orderData = [];
+         $scope.resolveOrderId = function (orderId) {
+             var mealName = '';
+             for (var i = 0; i < $scope.fooditems_starters.length; i++) {
+                 if (orderId == $scope.fooditems_starters[i].orderid) {
+                     mealName = $scope.fooditems_starters[i].mealname;
+                 }
+             }
+             return mealName;
+
+         }
+        socket.on('complete_data',function(msg){
+            var initialData = angular.copy(msg);
+            $scope.$apply(function () {
+
+                for (var x = 0; x < msg.length; x++) {
+                    $scope.orderData.push(initialData[x]);
+                }
+                
+            });
+        });
+
+        socket.on('order_received', function (msg) {
+            var initialData = angular.copy(msg);
+            $scope.$apply(function () {
+                $scope.orderData.push(initialData);
+            });
+
+        });
+
+        });
+        </script>
+</head>
+<h1>Server Monitor (to style)</h1>
+<body>
+
+
+<div ng-app="myapp" ng-controller="mycontroller">
+    <div class='container'>
+        <div class="row"><div class='left-section'>Table Number</div><div class='left-section'>Quantity and Items Ordered</div></div>
+        <div class='row' ng-repeat="x in orderData">
+            <div class='left-section'>{{x.tableNumber}}</div><div class='right-section'><div class='section-element' ng-repeat="y in x.order">{{y.quantity + ' x ' + resolveOrderId(y.orderid)}}</div>
+
+            </div>
+        </div>
+
+    </div>
+    
+
+</div>
+</body>
+</html>
